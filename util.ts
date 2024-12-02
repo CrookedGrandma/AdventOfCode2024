@@ -197,9 +197,13 @@ export function arrayFindEntryFromBack<T>(array: T[], predicate: (el: T) => bool
 
 export function stepsInDirection(pos: Position, dir: Direction, steps: number = 1): Position {
     switch (dir) {
-        case Direction.Up: return { x: pos.x, y: pos.y - 1 };
-        case Direction.Right: return { x: pos.x + 1, y: pos.y };
-        case Direction.Down: return { x: pos.x, y: pos.y + 1 };
-        case Direction.Left: return { x: pos.x - 1, y: pos.y };
+        case Direction.Up: return { x: pos.x, y: pos.y - steps };
+        case Direction.Right: return { x: pos.x + steps, y: pos.y };
+        case Direction.Down: return { x: pos.x, y: pos.y + steps };
+        case Direction.Left: return { x: pos.x - steps, y: pos.y };
     }
+}
+
+export function getDiffs(numbers: number[]): number[] {
+    return numbers.slice(0, -1).map((n, i) => numbers[i + 1] - n);
 }

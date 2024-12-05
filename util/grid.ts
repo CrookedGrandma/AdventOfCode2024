@@ -20,7 +20,7 @@ export class Grid<T> {
     }
 
     getItem(iCol: number, iRow: number) {
-        return this.rows[iRow][iCol];
+        return this.rows[iRow]?.[iCol];
     }
 
     setItem(iCol: number, iRow: number, value: T) {

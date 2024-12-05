@@ -13,7 +13,7 @@ const input = fs.readFileSync(`input/${handlerNumber}.txt`).toString().split("\n
 
 const handler = new(Object.values(require(`./handlers/${latestHandlerName}`))[0] as new(input: string[]) => Handler)(input);
 
-
+console.log("starting...\n")
 const outputA = handler.runA(input);
 write(outputA, true);
 

@@ -96,7 +96,7 @@ export function opposite(dir: Direction) {
     return ((dir + 2) % 4) as Direction;
 }
 
-export function fourAround(x: number, y: number) {
+export function fourAround(x: number, y: number): [x: number, y: number][] {
     return [
         [x, y - 1],
         [x + 1, y],
@@ -105,7 +105,7 @@ export function fourAround(x: number, y: number) {
     ];
 }
 
-export function eightAround(x: number, y: number) {
+export function eightAround(x: number, y: number): [x: number, y: number][] {
     return [
         [x,     y - 1],
         [x + 1, y - 1],

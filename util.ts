@@ -93,7 +93,11 @@ export function dirToStr(dir: Direction) {
 }
 
 export function opposite(dir: Direction) {
-    return ((dir + 2) % 4) as Direction;
+    return turnClockwise(dir, 2);
+}
+
+export function turnClockwise(dir: Direction, times: number = 1) {
+    return ((dir + times + 4) % 4) as Direction
 }
 
 export function fourAround(x: number, y: number): [x: number, y: number][] {

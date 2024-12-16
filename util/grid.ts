@@ -40,6 +40,11 @@ export class Grid<T> {
         return this.colCount * this.rowCount;
     }
 
+    contains(x: number, y: number): boolean {
+        return x >= 0 && x < this.colCount
+            && y >= 0 && y < this.rowCount;
+    }
+
     printGrid(mapping?: (item: T) => string) {
         const useMapping = !!mapping;
         for (let y = 0; y < this.rowCount; y++) {

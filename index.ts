@@ -11,9 +11,10 @@ console.log(`CHALLENGE NUMBER: ${handlerNumber}\n`);
 
 const input = fs.readFileSync(`input/${handlerNumber}.txt`).toString().split("\n").map(l => l.trim());
 
+console.log("constructing...\n")
 const handler = new(Object.values(require(`./handlers/${latestHandlerName}`))[0] as new(input: string[]) => Handler)(input);
 
-console.log("starting...\n")
+console.log("\nstarting...\n")
 const outputA = handler.runA(input);
 write(outputA, true);
 

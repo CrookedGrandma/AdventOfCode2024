@@ -128,7 +128,7 @@ export function setCharAt(str: string, index: number, chr: string) {
     return str.substring(0, index) + chr + str.substring(index + 1);
 }
 
-export function getDistinctPairs<T>(array: T[]) {
+export function getDistinctPairs<T>(array: T[]): [a: T, b: T][] {
     const pairs: ([a: T, b: T])[] = [];
     for (let i = 0; i < array.length - 1; i++)
         for (let j = i + 1; j < array.length; j++)

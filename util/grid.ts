@@ -19,7 +19,7 @@ export class Grid<T> {
         return this.rows.flat();
     }
 
-    getItem(iCol: number, iRow: number) {
+    getItem(iCol: number, iRow: number): T | undefined {
         return this.rows[iRow]?.[iCol];
     }
 

@@ -1,12 +1,13 @@
 import {Handler} from "../handler";
-import {sum, swapPositions} from "../util";
+import {sum} from "../util";
 
 const LOG = false;
 
 export class H9 extends Handler {
     blocks: Block[] = [];
     files: FileItem[] = [];
-    end: number;
+    start: Block;
+    end: Block;
 
     constructor(input: string[]) {
         super(input);
@@ -14,6 +15,7 @@ export class H9 extends Handler {
         let readingFile = true;
         let id = 0;
         let position = 0;
+        let lastBlock: Block | undefined = undefined;
         for (const num of line.split("")) {
             const n = +num;
             const blocks = Array.from({ length: n }, () => new Block(position++));
@@ -24,33 +26,58 @@ export class H9 extends Handler {
                 this.files.push(file);
                 id++;
             }
-            this.blocks.push(...blocks);
+
+            if (n > 0) {
+                lastBlock && (lastBlock.next = blocks[0]);
+                blocks[0].previous = lastBlock;
+                for (let i = 1; i < n; i++) {
+                    const prev = blocks[i - 1];
+                    const cur = blocks[i];
+                    prev.next = cur;
+                    cur.previous = prev;
+                }
+                this.blocks.push(...blocks);
+                lastBlock = blocks[n - 1];
+            }
+
             readingFile = !readingFile;
         }
-        this.end = this.blocks.length - 1;
+        this.start = this.blocks[0];
+        this.end = this.blocks[this.blocks.length - 1];
+    }
+
+    *getBlocksInOrder() {
+        let block: Block = this.start;
+        yield block;
+        while (block.next) {
+            block = block.next;
+            yield block;
+        }
     }
 
     visualize(): string {
-        return this.blocks.map(b => b.toString()).join("");
+        return Array.from(this.getBlocksInOrder()).map(b => b.toString()).join("");
     }
 
     runA(input: string[]): Output {
         if (LOG) console.log(this.visualize());
-        for (let i = 0; i < this.blocks.length - 1; i++) {
-            const block = this.blocks[i];
-            if (block.file)
-                continue;
 
-            const endBlock = this.getLastFileBlock();
-            // Stop if last block is before current free space
-            if (endBlock.position < i)
-                break;
-            // this.end was changed by getLastFileBlock
-            swapPositions(this.blocks, i, this.end);
-            block.position = endBlock.position;
-            endBlock.position = i;
+        let block = this.start;
+        while (!!block.next) {
+            if (!block.file) {
+                const endBlock = this.getLastFileBlock();
+                // Stop if last block is before current free space
+                if (endBlock.position < block.position)
+                    break;
+                this.swapPositions(block, endBlock);
+                this.end = block;
+                block = endBlock;
 
-            if (LOG) console.log(this.visualize());
+                if (LOG) console.log(this.visualize());
+            }
+            if (!block.next)
+                throw Error("bruh (kinderwoord van het jaar)");
+            block = block.next;
         }
 
         return sum(this.blocks.map(b => b.position * (b.file?.id ?? 0)));
@@ -60,14 +87,34 @@ export class H9 extends Handler {
         return undefined;
     }
 
-    getLastFileBlock(): Block {
-        let block = this.blocks[this.end];
-        while (!!block && !block.file)
-            block = this.blocks[--this.end];
+    swapPositions(a: Block, b: Block) {
+        const prevA = a.previous;
+        const nextA = a.next;
+        const prevB = b.previous;
+        const nextB = b.next;
+        const posA = a.position;
 
-        if (!block)
+        a.position = b.position;
+        b.position = posA;
+
+        a.previous = prevB;
+        prevB && (prevB.next = a);
+        a.next = nextB;
+        nextB && (nextB.previous = a);
+
+        b.previous = prevA;
+        prevA && (prevA.next = b);
+        b.next = nextA;
+        nextA && (nextA.previous = b);
+    }
+
+    getLastFileBlock(): Block {
+        while (!this.end.file && !!this.end.previous)
+            this.end = this.end.previous;
+
+        if (!this.end.file)
             throw Error("da kennie");
-        return block;
+        return this.end;
     }
 
 }
@@ -88,6 +135,9 @@ class Block {
     position: number;
     readonly originalPosition: number;
     file?: FileItem;
+
+    previous?: Block;
+    next?: Block;
 
     constructor(position: number) {
         this.position = position;

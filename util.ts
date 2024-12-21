@@ -211,3 +211,18 @@ export function stepsInDirection(pos: Position, dir: Direction, steps: number = 
 export function getDiffs(numbers: number[]): number[] {
     return numbers.slice(0, -1).map((n, i) => numbers[i + 1] - n);
 }
+
+export function removeAt<T>(array: T[], i: number): T {
+    return array.splice(i, 1)[0];
+}
+
+export function insertAt<T>(array: T[], element: T, i: number) {
+    array.splice(i, 0, element);
+}
+
+export function swapPositions<T>(array: T[], i1: number, i2: number) {
+    const e2 = removeAt(array, i2);
+    const e1 = removeAt(array, i1);
+    insertAt(array, e2, i1);
+    insertAt(array, e1, i2);
+}
